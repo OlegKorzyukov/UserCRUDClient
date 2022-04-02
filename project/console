@@ -3,9 +3,16 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Symfony\Component\Console\Application;
-use App\Command\UserManageCommand;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use App\Application;
 
-$app = new Application();
-$app->add(new UserManageCommand());
+$container = new ContainerBuilder();
+$loader = new YamlFileLoader($container, new FileLocator());
+$loader->load(__DIR__ . '/config/services.yml');
+
+$container->compile();
+
+$app = $container->get(Application::class);
 $app->run();
