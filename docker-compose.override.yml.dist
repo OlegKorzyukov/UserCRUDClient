@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+    php:
+        build:
+            context: "docker/php"
+            dockerfile: "Dockerfile.dev"
+        ports:
+            - "9001:9000"
+    nginx:
+        ports:
+            - "81:80"
