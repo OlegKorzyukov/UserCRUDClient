@@ -11,8 +11,8 @@ use App\Application;
 $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator());
 $loader->load(__DIR__ . '/config/services.yml');
+$container->compile(true);
 
-$container->compile();
 
 $app = $container->get(Application::class);
 $app->run();
