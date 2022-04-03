@@ -31,7 +31,7 @@ class ServerClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function createUser(string $name, string $email): ?string
+    public function createUser(string $name, string $email): string
     {
         $data = json_encode([
             'name' => $name,
@@ -60,7 +60,7 @@ class ServerClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function getUsers(): ?string
+    public function getUsers(): string
     {
         $response = $this->client->request(
             'GET',
@@ -81,7 +81,7 @@ class ServerClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function updateUser(int $userId, ?string $name, ?string $email): ?string
+    public function updateUser(int $userId, ?string $name, ?string $email): string
     {
         $data = json_encode([
             'name' => $name,
@@ -110,7 +110,7 @@ class ServerClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function deleteUser(int $userId): ?string
+    public function deleteUser(int $userId): string
     {
         $response = $this->client->request(
             'DELETE',
@@ -131,7 +131,7 @@ class ServerClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function createGroup(string $name): ?string
+    public function createGroup(string $name): string
     {
         $data = json_encode([
             'name' => $name,
@@ -159,7 +159,7 @@ class ServerClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function getGroups(): ?string
+    public function getGroups(): string
     {
         $response = $this->client->request(
             'GET',
@@ -180,7 +180,7 @@ class ServerClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function updateGroup(int $groupId, string $name): ?string
+    public function updateGroup(int $groupId, string $name): string
     {
         $data = json_encode([
             'name' => $name,
@@ -208,11 +208,32 @@ class ServerClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function deleteGroup(int $groupId): ?string
+    public function deleteGroup(int $groupId): string
     {
         $response = $this->client->request(
             'DELETE',
             "/api/v1/groups/$groupId",
+        );
+
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception($response->getContent());
+        }
+
+        return $response->getContent();
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function getReport(): string
+    {
+        $response = $this->client->request(
+            'GET',
+            '/api/v1/reports',
         );
 
         if (200 !== $response->getStatusCode()) {

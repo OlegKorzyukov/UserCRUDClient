@@ -27,5 +27,6 @@ services:
       $apiValue: '%api_integration_value%'
 
   Symfony\Component\HttpClient\NativeHttpClient: ~
+  Symfony\Component\Filesystem\Filesystem: ~
 
   Symfony\Contracts\HttpClient\HttpClientInterface: '@Symfony\Component\HttpClient\NativeHttpClient'
