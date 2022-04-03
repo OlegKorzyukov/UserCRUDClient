@@ -25,6 +25,8 @@ Run:
 ---
 Get list all commands: `docker-compose exec php ./console`
 
+Usage command: `docker-compose exec php ./console {command_name} {parameter1} ... {parameterN}`
+
 ---
 Rename `docker-compose.override.yml.dist` to `docker-compose.override.yml`
 
