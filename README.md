@@ -2,7 +2,6 @@ STACK
 ============================================
 * PHP -version 8.0.2
 * Symfony -version 5.4
-* MySQL -version 8.0
 * Composer -version 2.0.14
 
 INSTALL

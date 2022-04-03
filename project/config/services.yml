@@ -1,6 +1,12 @@
+parameters:
+  api_server_host: '%env(SERVER_HOST)%'
+  api_integration_key: '%env(SERVER_INTEGRATION_KEY)%'
+  api_integration_value: '%env(SERVER_INTEGRATION_VALUE)%'
+
 services:
   _defaults:
     autowire: true
+    autoconfigure: true
 
   _instanceof:
     Symfony\Component\Console\Command\Command:
@@ -13,3 +19,13 @@ services:
     public: true
     arguments:
       - !tagged_iterator app.command
+
+  App\Service\ServerClient:
+    arguments:
+      $host: '%api_server_host%'
+      $apiKey: '%api_integration_key%'
+      $apiValue: '%api_integration_value%'
+
+  Symfony\Component\HttpClient\NativeHttpClient: ~
+
+  Symfony\Contracts\HttpClient\HttpClientInterface: '@Symfony\Component\HttpClient\NativeHttpClient'
