@@ -123,4 +123,102 @@ class ServerClient
 
         return $response->getContent();
     }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function createGroup(string $name): ?string
+    {
+        $data = json_encode([
+            'name' => $name,
+        ]);
+
+        $response = $this->client->request(
+            'POST',
+            '/api/v1/groups',
+            [
+                'body' => $data
+            ],
+        );
+
+        if (201 !== $response->getStatusCode()) {
+            throw new Exception($response->getContent());
+        }
+
+        return $response->getContent();
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function getGroups(): ?string
+    {
+        $response = $this->client->request(
+            'GET',
+            '/api/v1/groups',
+        );
+
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception($response->getContent());
+        }
+
+        return $response->getContent();
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function updateGroup(int $groupId, string $name): ?string
+    {
+        $data = json_encode([
+            'name' => $name,
+        ]);
+
+        $response = $this->client->request(
+            'PUT',
+            "/api/v1/groups/$groupId",
+            [
+                'body' => $data
+            ],
+        );
+
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception($response->getContent());
+        }
+
+        return $response->getContent();
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function deleteGroup(int $groupId): ?string
+    {
+        $response = $this->client->request(
+            'DELETE',
+            "/api/v1/groups/$groupId",
+        );
+
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception($response->getContent());
+        }
+
+        return $response->getContent();
+    }
 }

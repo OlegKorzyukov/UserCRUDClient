@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command\User;
+namespace App\Command\Group;
 
 use App\Service\ServerClient;
 use Exception;
@@ -13,7 +13,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class UpdateUserCommand extends Command
+class CreateGroupCommand extends Command
 {
     private ServerClient $serverClient;
 
@@ -24,14 +24,12 @@ class UpdateUserCommand extends Command
         $this->serverClient = $serverClient;
     }
 
-    protected function configure(): void
+    protected function configure()
     {
-        $this->setName('user:update');
-        $this->setDescription('This command update a user');
-        $this->setHelp('username - string, email - unique string');
-        $this->addArgument('userId', InputArgument::REQUIRED, 'The user id.');
-        $this->addArgument('username', InputArgument::OPTIONAL, 'The username of the user.');
-        $this->addArgument('email', InputArgument::OPTIONAL, 'The email of the user.');
+        $this->setName('group:create');
+        $this->setDescription('This command create a new group');
+        $this->setHelp('name - unique string');
+        $this->addArgument('name', InputArgument::REQUIRED, 'The name of the group.');
     }
 
     /**
@@ -40,15 +38,13 @@ class UpdateUserCommand extends Command
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln([
-            'User Updater',
+            'Group Creator',
             '============',
         ]);
-        $output->writeln('UserID: ' . $input->getArgument('userId'));
-        $output->writeln('Username: ' . $input->getArgument('username'));
-        $output->writeln('Email: ' . $input->getArgument('email'));
+        $output->writeln('Name: ' . $input->getArgument('name'));
 
         $output->writeln([
             '============',
@@ -56,11 +52,7 @@ class UpdateUserCommand extends Command
         ]);
 
         try {
-            $result = $this->serverClient->updateUser(
-                $input->getArgument('userId'),
-                $input->getArgument('username'),
-                $input->getArgument('email')
-            );
+            $result = $this->serverClient->createGroup($input->getArgument('name'));
             $output->writeln($result);
         } catch (Exception $exception) {
             $output->writeln($exception->getMessage());

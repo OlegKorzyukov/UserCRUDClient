@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Command\User;
+namespace App\Command\Group;
 
 use App\Service\ServerClient;
 use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class UpdateUserCommand extends Command
+class GetGroupCommand extends Command
 {
     private ServerClient $serverClient;
 
@@ -26,12 +26,9 @@ class UpdateUserCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('user:update');
-        $this->setDescription('This command update a user');
-        $this->setHelp('username - string, email - unique string');
-        $this->addArgument('userId', InputArgument::REQUIRED, 'The user id.');
-        $this->addArgument('username', InputArgument::OPTIONAL, 'The username of the user.');
-        $this->addArgument('email', InputArgument::OPTIONAL, 'The email of the user.');
+        //TODO: make pagination parameter
+        $this->setName('group:get');
+        $this->setDescription('This command get all groups');
     }
 
     /**
@@ -43,25 +40,23 @@ class UpdateUserCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln([
-            'User Updater',
+            'All Groups',
             '============',
         ]);
-        $output->writeln('UserID: ' . $input->getArgument('userId'));
-        $output->writeln('Username: ' . $input->getArgument('username'));
-        $output->writeln('Email: ' . $input->getArgument('email'));
-
         $output->writeln([
             '============',
             'Send request to API server'
         ]);
 
+        $table = new Table($output);
+        $table->setHeaders(['ID', 'Name']);
+
         try {
-            $result = $this->serverClient->updateUser(
-                $input->getArgument('userId'),
-                $input->getArgument('username'),
-                $input->getArgument('email')
-            );
-            $output->writeln($result);
+            $result = json_decode($this->serverClient->getGroups());
+            foreach ($result->data as $group) {
+                $table->setRow($group->id, [$group->id, $group->name]);
+            }
+            $table->render();
         } catch (Exception $exception) {
             $output->writeln($exception->getMessage());
         }

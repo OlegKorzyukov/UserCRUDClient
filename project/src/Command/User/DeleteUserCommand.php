@@ -8,6 +8,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class DeleteUserCommand extends Command
 {
@@ -20,14 +24,20 @@ class DeleteUserCommand extends Command
         $this->serverClient = $serverClient;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('user:delete');
-        $this->setDescription('This command dellete a user');
+        $this->setDescription('This command delete a user');
         $this->addArgument('userId', InputArgument::REQUIRED, 'The user id.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln([
             'User Deleting',
