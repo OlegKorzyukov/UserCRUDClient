@@ -21,6 +21,10 @@ Run:
 `docker-compose up -d --force-recreate --build`
 
 `docker-compose exec php /bin/bash -c "cd /var/www/html && composer install --no-interaction"`
+
+---
+Get list all commands: `docker-compose exec php ./console`
+
 ---
 Rename `docker-compose.override.yml.dist` to `docker-compose.override.yml`
 
