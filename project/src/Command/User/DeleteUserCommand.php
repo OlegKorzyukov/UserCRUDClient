@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
-class CreateUserCommand extends Command
+class DeleteUserCommand extends Command
 {
     private ServerClient $serverClient;
 
@@ -22,29 +22,25 @@ class CreateUserCommand extends Command
 
     protected function configure()
     {
-        $this->setName('user:create');
-        $this->setDescription('This command create a new user');
-        $this->setHelp('username - string, email - unique string');
-        $this->addArgument('username', InputArgument::REQUIRED, 'The username of the user.');
-        $this->addArgument('email', InputArgument::REQUIRED, 'The email of the user.');
+        $this->setName('user:delete');
+        $this->setDescription('This command dellete a user');
+        $this->addArgument('userId', InputArgument::REQUIRED, 'The user id.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln([
-            'User Creator',
+            'User Deleting',
             '============',
         ]);
-        $output->writeln('Username: ' . $input->getArgument('username'));
-        $output->writeln('Email: ' . $input->getArgument('email'));
-
+        $output->writeln('UserID: ' . $input->getArgument('userId'));
         $output->writeln([
             '============',
             'Send request to API server'
         ]);
 
         try {
-            $result = $this->serverClient->createUser($input->getArgument('username'), $input->getArgument('email'));
+            $result = $this->serverClient->deleteUser($input->getArgument('userId'),);
             $output->writeln($result);
         } catch (Exception $exception) {
             $output->writeln($exception->getMessage());

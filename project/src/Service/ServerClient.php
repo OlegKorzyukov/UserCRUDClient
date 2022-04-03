@@ -2,35 +2,125 @@
 
 namespace App\Service;
 
-use HttpRequestException;
+use Exception;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ServerClient
 {
-    private HttpClient $client;
+    private HttpClientInterface $client;
 
-    public function __construct()
+    public function __construct(HttpClientInterface $client, string $host, string $apiKey, string $apiValue)
     {
-        $this->client = (new HttpClient());
+        $this->client = $client->withOptions([
+            'base_uri' => "http://$host",
+            'headers' => [
+                'Content-Type' => 'application/json',
+                $apiKey => $apiValue,
+            ],
+        ]);
     }
 
-    public function createUser(string $name, string $email): bool
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function createUser(string $name, string $email): ?string
     {
-        $uri = '/api/v1/users';
-        try {
-            $response = $this->client->request(
-                'GET',
-                'https://api.github.com/repos/symfony/symfony-docs'
-            );
+        $data = json_encode([
+            'name' => $name,
+            'email' => $email,
+        ]);
 
-            if (201 === $response->getStatusCode()) {
-                return true;
-            } else {
-                throw new HttpRequestException();
-            }
-        } catch (ClientExceptionInterface | TransportExceptionInterface | HttpRequestException $e) {
-            return false;
+        $response = $this->client->request(
+            'POST',
+            '/api/v1/users',
+            [
+                'body' => $data
+            ],
+        );
+
+        if (201 !== $response->getStatusCode()) {
+           throw new Exception($response->getContent());
         }
+
+        return $response->getContent();
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function getUsers(): ?string
+    {
+        $response = $this->client->request(
+            'GET',
+            '/api/v1/users',
+        );
+
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception($response->getContent());
+        }
+
+        return $response->getContent();
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function updateUser(int $userId, ?string $name, ?string $email): ?string
+    {
+        $data = json_encode([
+            'name' => $name,
+            'email' => $email,
+        ]);
+
+        $response = $this->client->request(
+            'PUT',
+            "/api/v1/users/$userId",
+            [
+                'body' => $data
+            ],
+        );
+
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception($response->getContent());
+        }
+
+        return $response->getContent();
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function deleteUser(int $userId): ?string
+    {
+        $response = $this->client->request(
+            'DELETE',
+            "/api/v1/users/$userId",
+        );
+
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception($response->getContent());
+        }
+
+        return $response->getContent();
     }
 }

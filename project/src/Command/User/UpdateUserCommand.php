@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
-class CreateUserCommand extends Command
+class UpdateUserCommand extends Command
 {
     private ServerClient $serverClient;
 
@@ -22,19 +22,21 @@ class CreateUserCommand extends Command
 
     protected function configure()
     {
-        $this->setName('user:create');
-        $this->setDescription('This command create a new user');
+        $this->setName('user:update');
+        $this->setDescription('This command update a user');
         $this->setHelp('username - string, email - unique string');
-        $this->addArgument('username', InputArgument::REQUIRED, 'The username of the user.');
-        $this->addArgument('email', InputArgument::REQUIRED, 'The email of the user.');
+        $this->addArgument('userId', InputArgument::REQUIRED, 'The user id.');
+        $this->addArgument('username', InputArgument::OPTIONAL, 'The username of the user.');
+        $this->addArgument('email', InputArgument::OPTIONAL, 'The email of the user.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln([
-            'User Creator',
+            'User Updater',
             '============',
         ]);
+        $output->writeln('UserID: ' . $input->getArgument('userId'));
         $output->writeln('Username: ' . $input->getArgument('username'));
         $output->writeln('Email: ' . $input->getArgument('email'));
 
@@ -44,7 +46,11 @@ class CreateUserCommand extends Command
         ]);
 
         try {
-            $result = $this->serverClient->createUser($input->getArgument('username'), $input->getArgument('email'));
+            $result = $this->serverClient->updateUser(
+                $input->getArgument('userId'),
+                $input->getArgument('username'),
+                $input->getArgument('email')
+            );
             $output->writeln($result);
         } catch (Exception $exception) {
             $output->writeln($exception->getMessage());
